@@ -16,27 +16,23 @@ S0=0.2;
 zb=zbmax-S0*abs(x);
 
 %time array:
-tmax=100000; % years
-dt=10; %time step, years
+tmax=10e5; % years
+dt=100; %time step, years
 t=0:dt:tmax; %creates an array of time steps (time)
 
 %Variables:
 rhor=2750; %kg/m^3, typical granite
 rhos=1300; %kg/m^3, from google search
-wdot0=1e-5; 
+wdot0=5e-5; 
 kappa=0.003; %m^2/yr from: Roering et al., 2001
 k=kappa*rhos;
-edot=4e-5; %m/yr -- this is from Whipple, Beyond Bedrock 
+edot=5e-6; %m/yr 
 H0=1;
 H=H0*ones(size(x));
 Hstar=0.3; %m
 
 z=zb+H;
-
-%% Create an initialization space
-%Q=zeros(N,1); %an array of empty fluxes which we'll imprint onto
-%z=zeros(N,1); %an array of empty heights which we'll imprint onto 
-
+ 
 imax=length(t); %loop goes every time step
 nplots=100; %so we only see 100 plots, and not every time
 tplot=tmax/nplots; %the amount of time between each plot
@@ -47,11 +43,6 @@ for i=1:imax
 %weathering of bedrock:
 wdot=wdot0*exp(-H/Hstar);
 
-%  an original shape of the bedrock based on x: zb
-%zb=(H-edot*t)+((rhor*wdot)/(2*k))*(L.^2-x.^2);
-%weathering of bedrock:
-%dzdx=((-rhor*wdot)/k)*x; 
-%dzbdt=-wdot;
 
 %change in the height of the bedrock
 dzdx= diff(z)/dx; %make a dz/dx array - slope of the hill
@@ -66,6 +57,7 @@ dHdt=zeros(size(x));
 dHdt(2:end-1)= ((rhor/rhos)*wdot(2:end-1))-((1/rhos)*dQdx);
 
 H(2:end-1)=H(2:end-1)+(dHdt(2:end-1)*dt);
+H=max(0,H);
 zb(2:end-1)=zb(2:end-1)-(wdot(2:end-1)*dt);
 
 H(1)=0;
@@ -77,9 +69,16 @@ zb(end)=zb(end)-(edot*dt);
 z=zb+H;
 if(rem(t(i),tplot)==0)  
 figure(1)
-     plot(x,z,'k')
+     plot(x,z,'k', 'linewidth', 2)
      hold on
-     plot (x,zb,'r')
+     plot (x,zb,'r', 'linewidth',3)
+     axis ([-L,L,70, 110])
+      X=[x,fliplr(x)]; %this makes a vector from x, and flip x left to right
+       Y=[zb,fliplr(z)];%makes a vector b/n zb and z
+    fill(X,Y,'k'); % this colors  - fill the vector X through Y 
+       Z=[zb,fliplr(ones(1,length(x)))];
+       fill(X,Z,'m');
+    %ht=text(95,-1000,['  ',num2str(t(i)/1000), ' kyears  '],'fontsize',18);
      xlabel('distance','fontname','arial','fontsize',21)
      ylabel('height','fontname','arial','fontsize',21)
      set(gca,'fontsize',18,'fontname','arial')

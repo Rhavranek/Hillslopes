@@ -17,7 +17,7 @@ dt=1000; %time step, years
 t=0:dt:tmax; %creates an array of time steps (time)
 %Variables:
 rhor=2750; %kg/m^3, typical granite
-rhos=2650; %kg/m^3, from google search
+rhos=1300; %kg/m^3, from google search
 wdot=1; %m/1,000,000 years
 wdot=wdot/1000; %m/1000 years
 kappa=0.003; %m^2/yr from: Roering et al., 2001
@@ -43,7 +43,7 @@ tplot=tmax/nplots; %the amount of time between each plot
 %% RUN
 for i=1:imax
  
- z=(H-edot*t)+((rhor*wdot)/(2*k))*(L.^2-x.^2); % This equation takes H (the max height of the hill), subtracts the amount of erosion 
+ %z=(H-edot*t)+((rhor*wdot)/(2*k))*(L.^2-x.^2); % This equation takes H (the max height of the hill), subtracts the amount of erosion 
  
  %a problem of my code is that it errodes at the same amount
  %everywhere.. not just at the edges...
@@ -61,17 +61,19 @@ for i=1:imax
 dHdt=(rhor/rhos)*wdot-(1/rhos)*dQdx;
 
 %update H:
-H(2:N-1)= H(2:N-1)-(rhor/rhos)*wdot-(1/rhos)*dQdx;
-end 
+H(2:N)= H(2:N)-(rhor/rhos)*wdot-(1/rhos)*dQdx;
+
 
 if(rem(t(i),tplot)==0)  
 figure(1)
-     plot(x,z)
+     plot(x,z,'k')
      hold on
+     plot (x,zb,'r')
      xlabel('distance','fontname','arial','fontsize',21)
      ylabel('height','fontname','arial','fontsize',21)
      set(gca,'fontsize',18,'fontname','arial')
      pause(0.1)
      hold off
+end
 end
 

@@ -26,7 +26,7 @@ rhos=1300; %kg/m^3, from google search
 wdot0=5e-5; 
 kappa=0.003; %m^2/yr from: Roering et al., 2001
 k=kappa*rhos;
-edot=5e-6; %m/yr 
+edot=2e-3; %m/yr 
 H0=1;
 H=H0*ones(size(x));
 Hstar=0.3; %m
@@ -42,7 +42,6 @@ tplot=tmax/nplots; %the amount of time between each plot
 for i=1:imax
 %weathering of bedrock:
 wdot=wdot0*exp(-H/Hstar);
-
 
 %change in the height of the bedrock
 dzdx= diff(z)/dx; %make a dz/dx array - slope of the hill
